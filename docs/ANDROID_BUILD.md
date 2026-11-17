@@ -39,3 +39,5 @@ API 주소는 빌드 시 포함되므로 변경 후 `android:sync`와 APK 재빌
 ## 검증 범위
 
 웹 TypeScript/Vite 빌드와 Capacitor 플러그인 동기화를 검증한다. 실제 서버 인증, 실기기 인셋/키보드/게임, 서명 APK/AAB 테스트는 새 서버와 Android 빌드 환경에서 별도 수행해야 한다.
+
+2026-11-17: 클라우드에서 JDK 21/Gradle 8.11.1/SDK 35로 `assembleDebug` 성공. [설치용 APK와 검증 범위](../downloads/README.md). 기존 다운로드 실패는 Java의 프록시 설정 누락을 수정해 해결했으며, 별도로 JDK 컴파일러와 Android SDK를 설치했다.
