@@ -64,10 +64,16 @@ const archivedPacks = new Map(
   [...legacyPacks, ...packs].map((p) => [packVersion(p), p]),
 );
 let remoteEnabled = false;
+let bundledEnabled = false;
+export function enableBundledContent() {
+  if (packs.length !== 10 || packs.some(p => p.review?.status !== "approved" || !p.assets.app_target?.startsWith("/content/") || !p.correct_keywords.length))
+    throw Error("BUNDLED_CONTENT_NOT_APPROVED");
+  bundledEnabled = true;
+}
 const urls = new Map<string, string>();
 const reviews = new Map<string, string>();
 export function generatedContentEnabled(development: boolean) {
-  return development || remoteEnabled;
+  return development || remoteEnabled || bundledEnabled;
 }
 export function configureGeneratedContent(
   rows: { manifest: PuzzlePack; target_url: string; review_status: string }[],

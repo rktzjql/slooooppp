@@ -22,9 +22,9 @@ APK: `android/app/build/outputs/apk/debug/app-debug.apk`.
 API 주소는 빌드 시 포함되므로 변경 후 `android:sync`와 APK 재빌드가 필요하다.
 주소 미설정 시 앱 화면은 열리지만 서버 요청은 차단하고 안내한다. 기존 Render 서버로 대체 연결하지 않는다.
 
-## 사용자가 구현할 서버 계약
+## 구현된 서버 계약
 
-기존 `apps/api`는 참고 소스로 보존되어 있으며 새 Android 서버를 구현/배포하지 않았다.
+`apps/api`에 Android 익명 인증과 영구 저장 연결을 구현했다. 실제 새 서버 배포는 [Android 서버 설정](ANDROID_SERVER.md)을 따른다.
 
 - `POST /auth/android`: `{ "installationSecret": "64자리 hex" }`를 받고 기존 `SessionResult`에 맞는 `{ "token": "서버가 발급한 토큰" }` 반환.
 - 설치별 256비트 난수는 Android 앱 전용 Preferences에 보관한다. 서버는 이를 비밀번호와 같은 비밀로 취급하고 해시로 저장하며 로그에 남기지 않는다. 최초 요청 시 익명 계정을 생성하고 이후 같은 비밀로 해당 계정 세션을 재발급한다. 요청 빈도 제한과 세션 만료/폐기를 구현한다.

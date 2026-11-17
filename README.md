@@ -79,6 +79,6 @@ AIMI_AI_MODE=fixture npm run dev
 
 2026-11-13 기준 기존 화면·서버·공유 로직·에셋·10일 콘텐츠가 포함되어 있습니다. 웹/API 빌드와 기존 테스트 **118개가 통과**했습니다.
 
-**Capacitor 7 Android 프로젝트를 추가했습니다.** 토스 SDK/TDS를 제거하고 Android 공유·클립보드·뒤로가기를 연결했습니다. 새 서버 구현은 별도이며 [Android 빌드 및 서버 계약](docs/ANDROID_BUILD.md)을 참고하세요. [설치용 APK](downloads/README.md)를 제공합니다. APK 빌드와 서명 검증을 완료했으며 실기기 검증 및 출시용 AAB는 별도입니다.
+**Capacitor 7 Android 프로젝트를 추가했습니다.** 토스 SDK/TDS를 제거하고 Android 공유·클립보드·뒤로가기를 연결했습니다. [익명 로그인 서버 구현과 Render/Supabase 배포 설정](docs/ANDROID_SERVER.md)을 추가했습니다. 실제 서버 배포는 별도이며 [Android 빌드 및 서버 계약](docs/ANDROID_BUILD.md)을 참고하세요. [설치용 APK](downloads/README.md)를 제공합니다. APK 빌드와 서명 검증을 완료했으며 실기기 검증 및 출시용 AAB는 별도입니다.
 
 [Android 전환 기술 문서](docs/ANDROID_HANDOFF.md) · [소스 스냅샷 목록](docs/SOURCE_SNAPSHOT.json)

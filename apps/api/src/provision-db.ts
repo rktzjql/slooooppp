@@ -17,8 +17,9 @@ try {
   const password = randomBytes(32).toString('hex');
   await admin.query(`CREATE ROLE aimi_api LOGIN PASSWORD '${password}' NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION`);
   await admin.query('GRANT USAGE ON SCHEMA aimi TO aimi_api');
-  await admin.query('GRANT SELECT ON aimi.schema_migrations, aimi.reward_policies TO aimi_api');
-  await admin.query('GRANT SELECT, INSERT, UPDATE, DELETE ON aimi.users, aimi.sessions, aimi.ep_wallets, aimi.ep_ledger, aimi.daily_reward_claims, aimi.idempotency_requests TO aimi_api');
+  await admin.query('GRANT SELECT ON aimi.schema_migrations, aimi.reward_policies, aimi.content_releases, aimi.daily_programs TO aimi_api');
+  await admin.query('GRANT SELECT, INSERT, UPDATE, DELETE ON aimi.users, aimi.sessions, aimi.ep_wallets, aimi.ep_ledger, aimi.daily_reward_claims, aimi.idempotency_requests, aimi.prototype_states, aimi.toss_connections, aimi.auth_rate_limits TO aimi_api');
+  await admin.query('GRANT SELECT,INSERT,UPDATE ON aimi.ai_daily_usage TO aimi_api');
   const runtime = new URL(initial);
   const originalUser = decodeURIComponent(runtime.username);
   runtime.username = originalUser.startsWith('postgres.') ? 'aimi_api.' + originalUser.slice('postgres.'.length) : 'aimi_api';

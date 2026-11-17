@@ -63,15 +63,8 @@ import { fileURLToPath } from "node:url";
 
 type Auth = (r: FastifyRequest) => Promise<string>;
 
-export function registerPrototype(
-  app: FastifyInstance,
-  repo: Repository,
-  auth: Auth,
-  beforeDelete?: (id: string) => Promise<void>,
-) {
-  app.addHook("preHandler", async (r) => {
+export function assertReleaseConfigured() {
     if (
-      r.url.startsWith("/v1/") &&
       process.env.NODE_ENV === "production" &&
       process.env.AIMI_RELEASE_VERSION !== "prototype-v1-reviewed" &&
       !(
@@ -80,6 +73,16 @@ export function registerPrototype(
       )
     )
       throw new ApiError("PROTOTYPE_RELEASE_NOT_REVIEWED", 503);
+}
+
+export function registerPrototype(
+  app: FastifyInstance,
+  repo: Repository,
+  auth: Auth,
+  beforeDelete?: (id: string) => Promise<void>,
+) {
+  app.addHook("preHandler", async (r) => {
+    if (r.url.startsWith("/v1/")) assertReleaseConfigured();
   });
   let cleanupTimer: ReturnType<typeof setInterval> | undefined;
   app.addHook("onReady", async () => {

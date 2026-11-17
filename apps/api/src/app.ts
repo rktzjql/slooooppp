@@ -17,8 +17,9 @@ import type { Config } from "./config.js";
 import { ApiError } from "./db.js";
 import { registerDemo } from "./services/demo/register.js";
 import { registerTossAuth } from "./services/toss/auth.js";
+import { registerAndroidAuth } from "./services/android/auth.js";
 import { registerAnonymousAuth } from "./services/toss/anonymous.js";
-import { registerPrototype } from "./modules/routes.js";
+import { registerPrototype, assertReleaseConfigured } from "./modules/routes.js";
 import { PostgresRepository } from "./modules/repository.js";
 import { claimReward } from "./economy.js";
 
@@ -31,6 +32,7 @@ export function createApp(
 ) {
   const app = Fastify({
     bodyLimit: 200000,
+    trustProxy: (_address, hop) => hop < config.TRUST_PROXY_HOPS,
     requestTimeout: 15000,
     genReqId: () => randomUUID(),
     logController: new LogController({ disableRequestLogging: true }),
@@ -106,10 +108,11 @@ export function createApp(
   app.get("/health/live", async () => ({ status: "ok" }));
   app.get("/health/ready", async (_request, reply) => {
     try {
+      assertReleaseConfigured();
       const result = await pool.query(
-        "SELECT count(*)::int AS count FROM aimi.schema_migrations",
+        "SELECT name FROM aimi.schema_migrations WHERE name='202611170009_android_auth.sql'",
       );
-      if (result.rows[0].count < 1) throw new Error("No migration");
+      if (!result.rowCount) throw new Error("Android migrations missing");
       return {
         status: "ready",
         content: remoteContentStatus(),
@@ -175,6 +178,7 @@ export function createApp(
     config.SESSION_SIGNING_KEY,
     dependencies.exchangeAnonymousCode,
   );
+  registerAndroidAuth(app, pool, config.SESSION_SIGNING_KEY);
   app.post("/auth/logout", async (request) => {
     await user(request);
     await pool.query("DELETE FROM aimi.sessions WHERE token_hash=$1", [

@@ -174,6 +174,7 @@ const messages: Record<string, string> = {
     "사용자 연결을 준비하고 있어요. 잠시 후 다시 시도해주세요.",
   TOSS_AUTH_CODE_INVALID: "연결 시간이 지났어요. 다시 시작해주세요.",
   TOSS_AUTH_RATE_LIMITED: "연결 요청이 많아요. 잠시 후 다시 시도해주세요.",
+  ANDROID_AUTH_RATE_LIMITED: "로그인 요청이 많아요. 1분 뒤 다시 시도해주세요.",
   ANDROID_SERVER_NOT_CONFIGURED: "새 서버 연결이 아직 설정되지 않았어요.",
   TOSS_AUTH_UNAVAILABLE: "토스 연결이 지연돼요. 잠시 후 다시 시도해주세요.",
   TOSS_AUTH_FAILED: "사용자를 확인하지 못했어요. 다시 시작해주세요.",

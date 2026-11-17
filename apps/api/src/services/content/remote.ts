@@ -1,12 +1,17 @@
 import { PUZZLE_RULE_VERSION } from "@aimi/contracts";
 import type { Pool } from "pg";
 import { configureDailyProgram, dailyProgramVersion } from "./daily-program.js";
-import { configureGeneratedContent } from "./generated.js";
+import { configureGeneratedContent, enableBundledContent } from "./generated.js";
 let status = { source: "bundled", version: "", releases: 0, preview: false };
 export function remoteContentStatus() {
   return { ...status, ruleVersion: PUZZLE_RULE_VERSION };
 }
 export async function loadRemoteContent(pool: Pool) {
+  if (process.env.AIMI_CONTENT_SOURCE === "bundled") {
+    enableBundledContent();
+    status = { source: "bundled", version: dailyProgramVersion(), releases: 10, preview: false };
+    return;
+  }
   if (process.env.AIMI_CONTENT_SOURCE !== "supabase") return;
   const program = await pool.query(
     "SELECT version,program,release_versions FROM aimi.daily_programs WHERE active=true",

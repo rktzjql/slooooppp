@@ -5,7 +5,7 @@ import { Clipboard } from "@capacitor/clipboard";
 import { Preferences } from "@capacitor/preferences";
 import { androidRuntime, localRuntime } from "../runtime";
 import { request, setToken, setAnonymousToken, configureSessionRecovery } from "../api/client";
-import { SessionResult } from "@aimi/contracts";
+import { AndroidLogin, SessionResult } from "@aimi/contracts";
 
 // The new backend must bind this random credential to an anonymous account.
 // It must never accept a client-supplied user ID as authentication.
@@ -16,7 +16,7 @@ async function androidSession() {
     value = Array.from(crypto.getRandomValues(new Uint8Array(32)), n => n.toString(16).padStart(2, "0")).join("");
     await Preferences.set({ key, value });
   }
-  return SessionResult.parse(await request("/auth/android", "POST", { installationSecret: value })).token;
+  return SessionResult.parse(await request("/auth/android", "POST", AndroidLogin.parse({ installationSecret: value }))).token;
 }
 if (androidRuntime) configureSessionRecovery(androidSession);
 let pending: Promise<void> | undefined;

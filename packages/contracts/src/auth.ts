@@ -8,3 +8,8 @@ export const SessionResult = z.object({
   token: z.string().regex(/^[a-f0-9]{64}$/),
   expiresIn: z.number().int().positive(),
 });
+
+// A 256-bit installation credential; never accept a user ID or friend code.
+export const AndroidLogin = z.object({
+  installationSecret: z.string().regex(/^[a-f0-9]{64}$/),
+}).strict();
