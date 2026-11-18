@@ -2,6 +2,8 @@
 
 Android `/auth/android` 인증이 구현되어 있다. 기존 화면과 게임/추천/거래 규칙을 유지하며 PostgreSQL에 사용자·세션·진행 기록을 저장한다. 기존 토스 운영 DB/서버와 별도의 새 프로젝트를 사용한다.
 
+2026-11-18 현재 새 Android 서버는 `https://aimi-api.onrender.com`이며 Render Free 서비스 `aimi-api`와 Supabase `aimii` 프로젝트를 사용한다. 아래 Blueprint 예시는 Starter 기반의 새 배포 절차다. 현재 서비스는 migration 9개를 별도로 적용했고 런타임 `aimi_api` 계정으로 기동 전 DB 확인을 수행하므로 관리자 `MIGRATION_DATABASE_URL`을 서버에 보관하지 않는다. `AIMI_GEMINI_API_KEY` 등록과 배포 `live`는 확인했지만 공개 HTTP·Gemini 실제 요청은 현재 환경의 네트워크 제한으로 미검증이다.
+
 ## 인증 동작
 
 앱은 최초 실행 시 256비트 설치 비밀값을 Android Preferences에 저장한다. `POST /auth/android`의 `installationSecret`을 서버가 검증하여 HMAC으로 저장하고 1시간짜리 세션을 발급한다. 원문 비밀값/세션은 DB나 로그에 저장하지 않는다. 동시 첫 로그인은 하나의 계정으로 합쳐지고 만료 세션은 같은 계정으로 갱신한다. 서버 재시작에도 기록을 유지한다.
@@ -46,7 +48,7 @@ Render의 비밀 환경변수:
 
 ## 3. APK에 새 서버 연결
 
-배포 완료 후 공개 HTTPS 주소를 `apps/miniapp/.env.local`에 설정한다.
+Android 전용 설정 `apps/miniapp/.env.android`에 새 서버 `https://aimi-api.onrender.com`을 연결했다. 다른 서버를 사용하려면 `apps/miniapp/.env.android.local`에 설정한다.
 
 ```dotenv
 VITE_API_BASE_URL=https://실제-새-서비스.onrender.com

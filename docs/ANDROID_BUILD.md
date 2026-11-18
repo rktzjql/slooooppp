@@ -8,8 +8,7 @@ Node 22.12+, JDK 21, Android Studio/SDK 35 필요.
 
 ```sh
 npm ci
-# apps/miniapp/.env.local에 아래 한 줄 설정 (실제 새 서버 주소)
-# VITE_API_BASE_URL=https://YOUR-NEW-API-HOST
+# Android 모드는 apps/miniapp/.env.android의 새 서버 주소를 사용한다.
 npm run android:sync
 npm run android:open
 # 또는
@@ -21,6 +20,8 @@ APK: `android/app/build/outputs/apk/debug/app-debug.apk`.
 서명 배포는 Android Studio에서 별도 키로 진행한다. 키를 저장소에 넣지 않는다.
 API 주소는 빌드 시 포함되므로 변경 후 `android:sync`와 APK 재빌드가 필요하다.
 주소 미설정 시 앱 화면은 열리지만 서버 요청은 차단하고 안내한다. 기존 Render 서버로 대체 연결하지 않는다.
+
+Android 빌드는 Vite `android` 모드로 실행하며 현재 공개 API 주소는 `https://aimi-api.onrender.com`이다. 다른 서버를 사용하려면 `apps/miniapp/.env.android.local`의 `VITE_API_BASE_URL`을 변경한 후 다시 빌드한다. 서버의 Gemini 키·DB 비밀번호·세션 서명키를 앱 환경변수에 넣지 않는다.
 
 ## 구현된 서버 계약
 

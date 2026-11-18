@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
+import { webcrypto } from "node:crypto";
 import { transformSync } from "esbuild";
 import * as contracts from "../../packages/contracts/dist/index.js";
 const load = (file, globals = {}) => {
@@ -10,7 +11,7 @@ const load = (file, globals = {}) => {
     format: "cjs",
     define: {
       "import.meta.env.PROD": "true",
-      "import.meta.env.VITE_API_BASE_URL": "undefined",
+      "import.meta.env.VITE_API_BASE_URL": '"https://api.example.test"',
       "import.meta.env.VITE_TEST_DEMO": '"true"',
     },
   }).code;
@@ -132,8 +133,8 @@ test("logout during authentication cannot revive or retry the old account", asyn
   assert.equal(c.read(), null);
   assert.equal(c.calls.length, 1);
 });
-test("failed renewal stops after one retry; web/shared demo never use Toss recovery", async () => {
-  for (const kind of ["toss", "shared", "web"]) {
+test("failed renewal stops after one retry; web/shared demo never use Android recovery", async () => {
+  for (const kind of ["android", "shared", "web"]) {
     const c = client(kind === "web");
     let authCalls = 0;
     if (kind === "shared") c.api.setToken("demo.test-session");
@@ -143,8 +144,8 @@ test("failed renewal stops after one retry; web/shared demo never use Toss recov
     });
     c.respond(async () => reply(401));
     await assert.rejects(c.api.request("/v1/state"));
-    assert.equal(authCalls, kind === "toss" ? 1 : 0);
-    assert.equal(c.calls.length, kind === "toss" ? 2 : 1);
+    assert.equal(authCalls, kind === "android" ? 1 : 0);
+    assert.equal(c.calls.length, kind === "android" ? 2 : 1);
     assert.equal(c.read(), null);
   }
 });
@@ -174,54 +175,59 @@ test("legacy OAuth sessions are never silently retried as a different anonymous 
   assert.equal(calls, 0);
   assert.equal(c.calls.length, 1);
 });
-test("SDK bridge uses new codes, bounds invalid-code retries, and shares start clicks", async () => {
+test("Android login shares start clicks and reuses its stored installation credential on renewal", async () => {
   const c = client();
-  let issued = 0;
-  let stored;
+  let savedCredential;
+  let storedToken;
+  let renew;
+  let savedCount = 0;
   const submitted = [];
   const bridge = load("apps/miniapp/src/lib/toss/bridge.ts", {
     require: (name) =>
-      name === "@apps-in-toss/web-framework"
+      name === "@capacitor/preferences"
         ? {
-            NavigationBar: {
-              setOptions: () => {
-                throw Error("Unsupported host");
+            Preferences: {
+              get: async () => ({ value: savedCredential ?? null }),
+              set: async ({ key, value }) => {
+                assert.equal(key, "aimi.android.installation-secret");
+                savedCredential = value;
+                savedCount++;
               },
-            },
-            User: {
-              createAnonymousKeyAuthCode: async () => ({
-                code: "sdk-" + ++issued,
-                expiresIn: 300,
-              }),
             },
           }
         : name === "@aimi/contracts"
           ? contracts
           : {
+              androidRuntime: true,
               localRuntime: false,
               browserRuntime: false,
               webDemoRuntime: false,
               RequestError: c.api.RequestError,
-              configureSessionRecovery: () => {},
+              configureSessionRecovery: (handler) => {
+                renew = handler;
+              },
               setAnonymousToken: (value) => {
-                stored = value;
+                storedToken = value;
               },
               request: async (path, method, body) => {
-                assert.equal(path, "/auth/anonymous");
+                assert.equal(path, "/auth/android");
                 assert.equal(method, "POST");
-                submitted.push(body.code);
-                if (submitted.length === 1)
-                  throw new c.api.RequestError("TOSS_AUTH_CODE_INVALID", 400);
+                submitted.push(body.installationSecret);
                 return { token: fresh, expiresIn: 3600 };
               },
             },
+    crypto: webcrypto,
     setTimeout,
     clearTimeout,
   });
   await Promise.all([bridge.login(), bridge.login()]);
-  assert.deepEqual(submitted, ["sdk-1", "sdk-2"]);
-  assert.equal(issued, 2);
-  assert.equal(stored, fresh);
+  assert.equal(submitted.length, 1);
+  assert.match(submitted[0], /^[a-f0-9]{64}$/);
+  assert.equal(savedCount, 1);
+  assert.equal(storedToken, fresh);
+  assert.equal(await renew(), fresh);
+  assert.deepEqual(submitted, [savedCredential, savedCredential]);
+  assert.equal(savedCount, 1);
   assert.doesNotThrow(() => bridge.updateNavigation(true));
 });
 

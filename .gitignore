@@ -3,6 +3,7 @@ dist/
 .env
 .env.*
 !.env.example
+!apps/miniapp/.env.android
 *.local
 *.ait
 *.apk

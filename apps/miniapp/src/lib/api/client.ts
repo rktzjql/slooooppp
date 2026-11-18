@@ -88,7 +88,11 @@ async function performRequest<T>(
   if (idempotent && !keys.has(signature))
     keys.set(signature, crypto.randomUUID());
   const controller = new AbortController(),
-    timer = setTimeout(() => controller.abort(), 35000);
+    // A free Render instance may need to wake before the first Android login.
+    timer = setTimeout(
+      () => controller.abort(),
+      path === "/auth/android" ? 90000 : 35000,
+    );
   if (mutation) window.dispatchEvent(new Event("aimi-write-start"));
   try {
     let sentToken = token();

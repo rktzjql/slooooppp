@@ -41,7 +41,7 @@
     "build:web-demo": "node tools/build-web-demo.mjs",
     "test:web-demo": "node --test tools/qa/web-demo.test.mjs tools/qa/runtime.test.mjs tools/qa/scale-lock.test.mjs tools/qa/session-recovery.test.mjs tools/qa/release-policy.test.mjs",
     "qa:labels": "node tools/qa/audit-action-labels.mjs",
-    "android:sync": "npm run build:shared && npm run build --workspace @aimi/miniapp && cap sync android",
+    "android:sync": "npm run build:shared && npm run build --workspace @aimi/miniapp -- --mode android && cap sync android",
     "android:open": "cap open android"
   },
   "engines": {
