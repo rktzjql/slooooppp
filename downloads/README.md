@@ -1,9 +1,10 @@
 # AIMI Android APK
 
-[새 서버 주소를 적용한 APK 다운로드](https://github.com/rktzjql/slooooppp/raw/refs/heads/main/downloads/aimi-debug.apk)
+[새 로고를 적용한 APK 다운로드](https://github.com/rktzjql/slooooppp/raw/refs/heads/main/downloads/aimi-debug.apk)
 
 - 직접 설치용 debug APK이며 Google Play 출시용 빌드는 아니다.
-- 앱 ID: `com.aimi.android`, 버전 **1.0.1 (2)**, Android 6.0 이상, target SDK 35.
+- 앱 ID: `com.aimi.android`, 버전 **1.0.2 (3)**, Android 6.0 이상, target SDK 35.
+- 앱 아이콘: 사용자 선택 시안의 크림색 배경과 진한 초록색 AIMI 로고. 기본·원형·적응형 아이콘에 적용했다.
 - 빌드일: 2026-11-18. 연결 주소: **https://aimi-api.onrender.com**.
 - Android 전용 `.env.android`를 읽어 빌드한다. 테스트 데모는 꺼져 있고 Gemini·DB·세션 비밀키는 APK에 포함하지 않는다.
 - 무료 Render 서버의 첫 기동을 기다리도록 Android 로그인 요청에 최대 90초를 허용한다.
@@ -12,7 +13,9 @@
 
 APK를 휴대폰에서 내려받아 설치하고 앱의 **시작하기**를 누른다.
 
-이번 APK는 이전 다운로드 APK와 **서명키가 다르므로 기존 앱 위에 업데이트 설치할 수 없다**. 이전 앱이 설치되어 있다면 삭제 후 새로 설치해야 한다. **삭제하면 앱에 저장된 데이터와 익명 계정 자격증명도 사라진다.** 보존할 기록이 있다면 삭제하지 말고 기존 서명키로 재빌드해야 한다. 이번 서명키는 저장소에 포함하지 않고 빌드 환경에 보관했다.
+이번 **1.0.2는 1.0.1과 같은 서명키**를 사용하므로 삭제하지 않고 업데이트 설치할 수 있다. 1.0.1을 설치했다면 그대로 APK를 실행한다.
+
+그보다 이전 1.0 APK와는 서명이 다르다. 이전 1.0이 설치되어 있다면 삭제 후 설치해야 하며, **삭제하면 앱 저장 데이터와 익명 계정 자격증명도 사라진다**. 보존할 기록이 있다면 삭제하지 말고 기존 서명키로 재빌드해야 한다. 서명키는 저장소에 포함하지 않는다.
 
 ## 확인한 항목
 
